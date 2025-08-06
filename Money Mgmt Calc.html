@@ -1,0 +1,464 @@
+<!doctype html><html><head></head><body><!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Money Management Calculator</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background: linear-gradient(to right, #6a11cb, #2575fc);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+		}
+
+		.container {
+			background: rgba(255, 255, 255, 0.1);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			border-radius: 10px;
+			width: 500px;
+		}
+
+		.header {
+			text-align: center;
+			padding: 20px;
+			background-color: #005bff;
+			color: white;
+			margin-top: 30px;
+		}
+
+		h3.center-title {
+			text-align: center;
+			font-size: 24px;
+			font-weight: 800;
+			color: white;
+			margin-bottom: 20px;
+		}
+
+		.box {
+			margin: 10px 0;
+		}
+
+		label {
+			font-weight: bold;
+			margin-bottom: 5px;
+			display: block;
+		}
+
+		input,
+		select {
+			width: 90%;
+			padding: 8px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+		}
+
+		.result-box {
+			width: 90%;
+			padding: 10px;
+			background-color: #f1f1f1;
+			border: 1px solid #ddd;
+			margin-top: 20px;
+			font-size: 18px;
+		}
+
+		.error {
+			color: red;
+			font-size: 16px;
+			margin-top: 10px;
+		}
+
+		button {
+			padding: 10px 20px;
+			background-color: #28a745;
+			border: none;
+			color: white;
+			border-radius: 5px;
+			font-size: 16px;
+			cursor: pointer;
+			transition: transform 0.2s ease-in-out;
+			width: 90%;
+			/* Reduce width to prevent overlap during bulging */
+			box-sizing: border-box;
+			/* Ensures padding is included in the width */
+		}
+
+		button:hover {
+			transform: scale(1.1);
+		}
+
+		.calculator-list {
+			text-align: center;
+			margin-bottom: 10px;
+			display: grid;
+			gap: 10px;
+			grid-template-columns: 1fr 1fr
+		}
+
+		.calculator-list button {
+			margin: 10px;
+			background-color: #32CD32;
+			color: white;
+			border: none;
+			font-weight: bold;
+			padding: 10px 20px;
+			border-radius: 2px;
+			display: inline-block;
+			transition: background-color 0.2s;
+			ox-shadow 0.3s;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			animation: pulse 2.25s infinite;
+			cursor: pointer;
+		}
+
+		@keyframes pulse {
+			0% {
+				transform: scale(1);
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			}
+
+			50% {
+				transform: scale(1.05);
+				/* Slightly bigger */
+				box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+			}
+
+			100% {
+				transform: scale(1);
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			}
+		}
+
+		.calculator-list button:hover {
+			background-color: #155f7a;
+		}
+
+		footer {
+			text-align: center;
+			padding: 20px;
+			background-color: #005bff;
+			color: white;
+			margin-top: 30px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container">
+		<div class="header">
+			<h2>Money Management Calculator</h2>
+		</div>
+		<h3 class="center-title">Choose a Calculator</h3>
+		<div class="calculator-list">
+			<button onclick="showSIPCalculator()">SIP Calculator</button>
+			<button onclick="showLumpsumCalculator()">Lumpsum Calculator</button>
+			<button onclick="showFDCalculator() ">FD Calculator</button>
+			<button onclick="showWithdrawalCalculator()">Monthly Withdrawals Calculator</button>
+			<button onclick="showEMICalculator()">Loan EMI Calculator</button>
+			<button onclick="showDebtRepaymentCalculator()">Loan Repayment Calculator</button>
+		</div>
+
+		<div id="calculator-container"></div>
+		<div class="error" id="error-message"></div>
+		<footer>
+			<p>&copy; 2024 Finance Calculators by EKR | All Rights Reserved</p>
+		</footer>
+	</div>
+
+	<script>
+		function showSIPCalculator() {
+        document.getElementById("calculator-container").innerHTML = `
+            <h3 class="center-title">SIP Calculator</h3>
+            <label for="sip-amount">Enter the monthly SIP amount:</label>
+            <input type="number" id="sip-amount" placeholder="Enter SIP amount" />
+            
+            <label for="sip-rate">Enter the annual return rate (in %):</label>
+            <input type="number" id="sip-rate" placeholder="Enter annual rate" />
+            
+            <label for="sip-years">Enter the tenure (in years):</label>
+            <input type="number" id="sip-years" placeholder="Enter tenure in years" />
+            
+            <button onclick="calculateSIP()">Calculate Maturity Amount</button>
+            <div class="result-box" id="sip-result"></div>
+        `;
+        document.getElementById("error-message").innerHTML = "";
+    }
+
+    function showEMICalculator() {
+        document.getElementById("calculator-container").innerHTML = `
+            <h3 class="center-title">Loan EMI Calculator</h3>
+            <label for="loan-amount">Enter the loan amount (Principal):</label>
+            <input type="number" id="loan-amount" placeholder="Enter loan amount" />
+            
+            <label for="loan-rate">Enter the annual interest rate (in %):</label>
+            <input type="number" id="loan-rate" placeholder="Enter interest rate" />
+            
+            <label for="loan-years">Enter the loan tenure (in years):</label>
+            <input type="number" id="loan-years" placeholder="Enter loan tenure" />
+            
+            <button onclick="calculateEMI()">Calculate EMI</button>
+            <div class="result-box" id="emi-result"></div>
+        `;
+        document.getElementById("error-message").innerHTML = "";
+    }
+
+    function showWithdrawalCalculator() {
+        document.getElementById("calculator-container").innerHTML = `
+            <h3 class="center-title">Monthly Withdrawals Calculator</h3>
+			      <h4>Only Withdrawing, No addition of Money but Compounding Quarterly on the rest Money</h4>
+            <label for="initial-amount">Enter the initial amount:</label>
+            <input type="number" id="initial-amount" placeholder="Enter initial amount" />
+            
+            <label for="withdrawal">Enter the monthly withdrawal amount:</label>
+            <input type="number" id="withdrawal" placeholder="Enter withdrawal amount" />
+            
+            <label for="interest-rate">Enter the annual interest rate (in %):</label>
+            <input type="number" id="interest-rate" placeholder="Enter annual rate" />
+            
+            <label for="withdrawal-years">Enter the total withdrawal period (in years):</label>
+            <input type="number" id="withdrawal-years" placeholder="Enter withdrawal years" />
+            
+            <button onclick="calculateWithdrawals()">Calculate Balance After Withdrawals</button>
+            <div class="result-box" id="withdrawal-result"></div>
+        `;
+        document.getElementById("error-message").innerHTML = "";
+    }
+
+    function showDebtRepaymentCalculator() {
+        document.getElementById("calculator-container").innerHTML = `
+            <h3 class="center-title">Loan Repayment Calculator</h3>
+            <label for="debt-amount">Enter the total debt amount:</label>
+            <input type="number" id="debt-amount" placeholder="Enter debt amount" />
+            
+            <label for="debt-rate">Enter the annual interest rate (in %):</label>
+            <input type="number" id="debt-rate" placeholder="Enter interest rate" />
+            
+            <label for="monthly-payment">Enter the monthly payment amount:</label>
+            <input type="number" id="monthly-payment" placeholder="Enter monthly payment" />
+            
+            <button onclick="calculateDebtRepayment()">Calculate Debt Repayment</button>
+            <div class="result-box" id="debt-result"></div>
+        `;
+        document.getElementById("error-message").innerHTML = "";
+    }
+
+	  function showLumpsumCalculator() {
+    	document.getElementById("calculator-container").innerHTML = `
+    	<h3 class="center-title">Lumpsum Calculator</h3>
+    	<label for="lumpsum-amount">Enter the investment amount (₹):</label>
+	    <input type="number" id="lumpsum-amount" placeholder="Enter investment amount" />
+	
+	    <label for="lumpsum-rate">Enter the annual return rate (in %):</label>
+    	<input type="number" id="lumpsum-rate" placeholder="Enter annual rate" />
+	
+	    <label for="lumpsum-years">Enter the tenure (in years):</label>
+	    <input type="number" id="lumpsum-years" placeholder="Enter tenure in years" />
+	
+	    <button onclick="calculateLumpsum()">Calculate Maturity Amount</button>
+	    <div class="result-box" id="lumpsum-result"></div>
+	    `;
+	    document.getElementById("error-message").innerHTML = "";
+	  }
+
+	  function showFDCalculator() {
+	    document.getElementById("calculator-container").innerHTML = `
+    	<h3 class="center-title">FD Calculator</h3>
+    	<label for="fd-amount">Enter the deposit amount (₹):</label>
+    	<input type="number" id="fd-amount" placeholder="Enter deposit amount" />
+	
+    	<label for="fd-rate">Enter the annual interest rate (in %):</label>
+    	<input type="number" id="fd-rate" placeholder="Enter annual rate" />
+	
+    	<label for="fd-years">Enter the tenure (in years):</label>
+    	<input type="number" id="fd-years" placeholder="Enter tenure in years" />
+	
+	    <label for="fd-frequency">Select compounding frequency:</label>
+	    <select id="fd-frequency">
+	                        <option value="monthly">Monthly</option>
+	                        <option value="yearly">Yearly</option>
+	                 </select>
+	
+	    <button onclick="calculateFD()">Calculate Maturity Amount</button>
+	    <div class="result-box" id="fd-result"></div>
+	    `;
+	    document.getElementById("error-message").innerHTML = "";
+  	}
+
+    function calculateSIP() {
+        const sipAmount = parseFloat(document.getElementById("sip-amount").value);
+        const sipRate = parseFloat(document.getElementById("sip-rate").value);
+        const sipYears = parseInt(document.getElementById("sip-years").value);
+
+        if (isNaN(sipAmount) || isNaN(sipRate) || isNaN(sipYears)) {
+            document.getElementById("error-message").innerHTML = "Please enter valid values!";
+            return;
+        }
+
+        const rate = sipRate / 100 / 12; 
+        const months = sipYears * 12;
+        const maturityAmount = sipAmount * ((Math.pow(1 + rate, months) - 1) / rate) * (1 + rate);
+        document.getElementById("sip-result").innerHTML = `Maturity Amount: ₹${maturityAmount.toFixed(2)}`;
+    }
+
+  	function calculateEMI() {
+    	const loanAmount = parseFloat(document.getElementById("loan-amount").value);
+    	const loanRate = parseFloat(document.getElementById("loan-rate").value);
+    	const loanYears = parseInt(document.getElementById("loan-years").value);
+	
+    	if (isNaN(loanAmount) || isNaN(loanRate) || isNaN(loanYears)) {
+      	document.getElementById("error-message").innerHTML = "Please enter valid values!";
+      	return;
+    	}
+	
+    	const monthlyRate = loanRate / 100 / 12;
+    	const months = loanYears * 12;
+    	const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+    	const totalRepayment = emi * months;
+	
+    	document.getElementById("emi-result").innerHTML = `
+        	EMI: ₹${emi.toFixed(2)}<br>
+	        Total Repayment: ₹${totalRepayment.toFixed(2)}
+	         `;
+    	}
+
+	  function calculateWithdrawals() {
+    const initialAmount = parseFloat(document.getElementById("initial-amount").value);
+    const withdrawal = parseFloat(document.getElementById("withdrawal").value);
+    const interestRate = parseFloat(document.getElementById("interest-rate").value);
+    const years = parseInt(document.getElementById("withdrawal-years").value);
+
+    if (isNaN(initialAmount) || isNaN(withdrawal) || isNaN(interestRate) || isNaN(years)) {
+        document.getElementById("error-message").innerHTML = "Please enter valid inputs.";
+        document.getElementById("withdrawal-result").innerHTML = "";
+        return;
+    }
+
+    const quarterlyRate = interestRate / 4 / 100; // Quarterly interest rate
+    const months = years * 12;
+    const quarters = years * 4; // Total number of quarters
+    let balance = initialAmount;
+
+    for (let month = 1; month <= months; month++) {
+        balance -= withdrawal; // Deduct monthly withdrawal
+
+        // Apply quarterly compounding at the end of each quarter (every 3rd month)
+        if (month % 3 === 0) {
+            balance += balance * quarterlyRate;
+        }
+
+        // Check if the balance is depleted
+        if (balance <= 0) {
+            document.getElementById("withdrawal-result").innerHTML = `Balance depleted in month ${month}.`;
+            balance = 0;
+            break;
+        }
+    }
+
+    document.getElementById("withdrawal-result").innerHTML = `The total balance after ${years} years is:
+        ₹${balance.toFixed(2)}`;
+}
+
+
+    function calculateDebtRepayment() {
+    const debtAmountInput = document.getElementById("debt-amount").value;
+    const debtRateInput = document.getElementById("debt-rate").value;
+    const monthlyPaymentInput = document.getElementById("monthly-payment").value;
+
+    const debtAmount = parseFloat(debtAmountInput);
+    const debtRate = parseFloat(debtRateInput);
+    const monthlyPayment = parseFloat(monthlyPaymentInput);
+
+    // Clear previous messages
+    document.getElementById("error-message").innerHTML = "";
+    document.getElementById("debt-result").innerHTML = "";
+
+    // Input validation
+    if (isNaN(debtAmount) || isNaN(debtRate) || isNaN(monthlyPayment)) {
+        document.getElementById("error-message").innerHTML = "Please enter valid numeric inputs.";
+        return;
+    }
+
+    if (debtAmount <= 0 || debtRate <= 0 || monthlyPayment <= 0) {
+        document.getElementById("error-message").innerHTML = "Values must be greater than zero.";
+        return;
+    }
+
+    const monthlyRate = debtRate / 12 / 100;
+    let debt = debtAmount;
+    let month = 0;
+
+    if (monthlyPayment <= debt * monthlyRate) {
+        document.getElementById("error-message").innerHTML = "The monthly payment is too low to cover the interest. The debt will never be paid off.";
+        return;
+    }
+
+    while (debt > 0) {
+        const interest = debt * monthlyRate;
+        debt = debt + interest - monthlyPayment;
+        month++;
+
+        // Prevent infinite loops
+        if (month > 1200) { // Set a max limit for 100 years (1200 months)
+            document.getElementById("error-message").innerHTML = "Calculation exceeds realistic limits. Please revise the inputs.";
+            return;
+        }
+    }
+
+    // Convert months to years and months for better readability
+    const years = Math.floor(month / 12);
+    const remainingMonths = month % 12;
+
+    document.getElementById("debt-result").innerHTML = `Debt paid off in ${years} years and ${remainingMonths} months.`;
+}
+
+
+	  	function calculateLumpsum() {
+	    	const amount = parseFloat(document.getElementById("lumpsum-amount").value);
+	    	const rate = parseFloat(document.getElementById("lumpsum-rate").value);
+	    	const years = parseFloat(document.getElementById("lumpsum-years").value);
+		
+	    	if (isNaN(amount) || isNaN(rate) || isNaN(years)) {
+	    	document.getElementById("error-message").innerHTML = "Please enter valid values!";
+	    	return;
+	    	}
+		
+	    	const maturityAmount = amount * Math.pow(1 + (rate / 100), years);
+	    	document.getElementById("lumpsum-result").innerHTML = `Maturity Amount: ₹${maturityAmount.toFixed(2)}`;
+	  	}
+
+	  function calculateFD() {
+	    const amount = parseFloat(document.getElementById("fd-amount").value);
+	    const rate = parseFloat(document.getElementById("fd-rate").value);
+	    const years = parseFloat(document.getElementById("fd-years").value);
+	    const frequency = document.getElementById("fd-frequency").value;
+	
+    	if (isNaN(amount) || isNaN(rate) || isNaN(years)) {
+	      document.getElementById("error-message").innerHTML = "Please enter valid values!";
+	      return;
+    	}
+	
+	    let maturityAmount;
+	    if (frequency === "monthly") {
+	    const monthlyRate = rate / 100 / 12;
+	    maturityAmount = amount * Math.pow(1 + monthlyRate, 12 * years);
+	    } else if (frequency === "yearly") {
+	    const yearlyRate = rate / 100;
+	    maturityAmount = amount * Math.pow(1 + yearlyRate, years);
+	    }
+	
+	    document.getElementById("fd-result").innerHTML = `Maturity Amount: ₹${maturityAmount.toFixed(2)}`;
+	  }
+
+
+
+	</script>
+</body>
+
+</html></body><html>
